@@ -167,3 +167,25 @@
         EM.stop
       end.resume
     end
+
+!SLIDE smaller
+# em-synchrony
+
+    @@@ ruby
+    require 'em-synchrony'
+    require 'em-synchrony/em-http'
+
+    def get_drop(slug)
+      EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+        get(:head => { 'Accept' => 'application/json' }).
+        response
+    end
+
+    EM.synchrony do
+      get_drop '9KXp' # => {"content_url": ...
+      get_drop '5kXC' # => {"content_url": ...
+
+      EM.stop
+    end
+
+    puts 'done'
