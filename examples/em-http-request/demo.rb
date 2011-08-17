@@ -1,5 +1,4 @@
 require 'em-http-request'
-require 'yajl'
 
 EventMachine.run do
   http = EventMachine::HttpRequest.new('http://api.cld.me/9KXp').
@@ -11,7 +10,7 @@ EventMachine.run do
   end
 
   http.callback do
-    p Yajl::Parser.parse(http.response)
+    puts http.response
     EM.stop
   end
 end

@@ -1,5 +1,3 @@
 source :rubygems
 
-gem 'eventmachine'
 gem 'em-http-request', :git => 'https://github.com/igrigorik/em-http-request.git'
-gem 'yajl-ruby'
