@@ -9,6 +9,13 @@ GIT
       http_parser.rb (>= 0.5.1)
 
 GIT
+  remote: https://github.com/igrigorik/em-synchrony.git
+  revision: 4224adb118eb5ce53c65feb70985976ca07671ae
+  specs:
+    em-synchrony (0.3.0.beta.1)
+      eventmachine (>= 1.0.0.beta.1)
+
+GIT
   remote: https://github.com/lmarburger/guard-minitest.git
   revision: b7909634b972e7aaf9c186d5eb517d38c94f6f53
   branch: add_load_path_option
@@ -82,7 +89,7 @@ PLATFORMS
 
 DEPENDENCIES
   em-http-request!
-  eventmachine
+  em-synchrony!
   growl_notify
   guard
   guard-minitest!

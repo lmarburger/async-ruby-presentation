@@ -1,4 +1,3 @@
-require 'em-http-request'
 require 'vcr'
 
 VCR.config do |c|

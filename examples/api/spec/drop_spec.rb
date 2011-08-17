@@ -3,65 +3,43 @@ require 'drop'
 
 describe Drop do
 
-  # Stolen from em-http-request's specs
-  def failed(http = nil)
-    EM.stop
-    deny { 'fail' }
-  end
-
   describe '.find' do
     it 'finds a bookmark' do
-      EM.run do
+      EM.synchrony do
         VCR.use_cassette 'bookmark' do
           drop = Drop.find '5kXC'
+          EM.stop
 
-          drop.errback { failed }
-          drop.callback do
-            assert { drop.is_a? Drop }
-            assert { drop.href         == 'http://my.cl.ly/items/4268562' }
-            assert { drop.redirect_url == 'http://getcloudapp.com/download' }
-            assert { drop.remote_url.nil? }
-
-            EM.stop
-          end
+          assert { drop.is_a? Drop }
+          assert { drop.href         == 'http://my.cl.ly/items/4268562' }
+          assert { drop.redirect_url == 'http://getcloudapp.com/download' }
+          assert { drop.remote_url.nil? }
         end
       end
     end
 
     it 'finds a image' do
-      EM.run do
+      EM.synchrony do
         VCR.use_cassette 'image' do
           drop = Drop.find '9KXp'
+          EM.stop
 
-          drop.errback { failed }
-          drop.callback do
-            assert { drop.is_a? Drop }
-            assert { drop.href       == 'http://my.cl.ly/items/8462162' }
-            assert { drop.remote_url == 'http://f.cl.ly/items/2m1n1x2W132C0C0s2C2X/cover.jpg'}
-            assert { drop.redirect_url.nil? }
-
-            EM.stop
-          end
+          assert { drop.is_a? Drop }
+          assert { drop.href       == 'http://my.cl.ly/items/8462162' }
+          assert { drop.remote_url == 'http://f.cl.ly/items/2m1n1x2W132C0C0s2C2X/cover.jpg'}
+          assert { drop.redirect_url.nil? }
         end
       end
     end
 
-    it 'fails when finding a nonexistent drop' do
-      failed = :not_failed
-
-      EM.run do
+    it 'raises a DropNotFound error' do
+      EM.synchrony do
         VCR.use_cassette 'nonexistent' do
-          drop = Drop.find 'hhgttg'
+          assert { rescuing { Drop.find('hhgttg') }.is_a? Drop::NotFound }
 
-          drop.callback { failed }
-          drop.errback do
-            failed = :failed
-            EM.stop
-          end
+          EM.stop
         end
       end
-
-      assert { failed == :failed }
     end
   end
 

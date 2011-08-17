@@ -1,35 +1,19 @@
-require 'em-http-request'
+require 'em-synchrony'
+require 'em-synchrony/em-http'
 require 'ostruct'
 require 'yajl'
 
 class Drop < OpenStruct
-  include EM::Deferrable
+
+  class NotFound < StandardError; end
 
   def self.find(slug)
-    drop = Drop.new
+    request = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+                              get(:head => { 'Accept'=> 'application/json' })
 
-    http = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
-                           get(:head => { 'Accept'=> 'application/json' })
+    raise NotFound unless request.response_header.status == 200
 
-    http.errback { drop.fail }
-    http.callback do
-      if http.response_header.status == 200
-        drop.load Yajl::Parser.parse(http.response)
-        drop.succeed
-      else
-        drop.fail
-      end
-    end
-
-    drop
-  end
-
-  def load(attributes)
-    attributes_with_symbolized_keys = attributes.map do |key, value|
-      [ key.to_sym, value ]
-    end
-
-    marshal_load Hash[attributes_with_symbolized_keys]
+    Drop.new Yajl::Parser.parse(request.response)
   end
 
 end
