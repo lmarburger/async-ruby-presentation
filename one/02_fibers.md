@@ -1,3 +1,6 @@
+!SLIDE subsection
+# Fibers
+
 !SLIDE bullets
 # Fibers
 
@@ -12,41 +15,155 @@
 <!-- New in Ruby 1.9 -->
 
 !SLIDE smaller
-# Working With Fibers
+# `Fiber.resume`
 
     @@@ ruby
-    fiber = Fiber.new do
-      puts 'Starting fiber!'
-      Fiber.yield 1
-      2
+    f = Fiber.new do
+      puts 'Oh, hi!'
     end
 
-    fiber.resume
-    # Starting fiber!
-    # => 1 
+    f.resume
 
-    fiber.resume
-    # => 2 
-
-    fiber.resume
-    # FiberError: dead fiber called
+    # Oh, hi!
 
 !SLIDE smaller
-# Working With Fibers
+# `Fiber.resume`
 
     @@@ ruby
-    fiber = Fiber.new do
-      puts 'Starting fiber!'
-      Fiber.yield 1
-      2
+    f = Fiber.new do
+      # This fiber has full control.
+      (0..100_000).each do |i|
+        puts "Blocked :( #{ i }"
+      end
     end
 
-    fiber.resume
-    # Starting fiber!
-    # => 1 
+    f.resume
+    puts "It's about time!"
 
-    fiber.resume
-    # => 2 
+    # Blocked :( 0
+    # Blocked :( 1
+    # Blocked :( 2
+    # ...
+    # Blocked :( 100000
+    # It's about time!
 
-    fiber.resume
+<!-- Demonstrating manual scheduling -->
+
+
+!SLIDE smaller
+# `Fiber.yield`
+
+    @@@ ruby
+    f = Fiber.new do
+      puts 'Starting fiber'
+      Fiber.yield
+
+      (0..100_000).each do |i|
+        puts "Blocked :( #{ i }"
+      end
+    end
+
+    f.resume
+    puts "That was quick!"
+    # Starting fiber
+    # That was quick!
+
+    f.resume
+    puts "It's about time!"
+    # Blocked :( 0
+    # ...
+    # Blocked :( 100000
+    # It's about time!
+
+    f.resume
     # FiberError: dead fiber called
+
+
+!SLIDE smaller
+# `Fiber.yield`
+
+    @@@ ruby
+    f = Fiber.new do
+      i = 0
+      while
+        i = i + 1
+        Fiber.yield(i) if i % 5 == 0
+      end
+    end
+
+    f.resume # => 5
+    f.resume # => 10
+    f.resume # => 15
+    f.resume # => 20
+
+<!--
+  Return value of #resume is the arguments passed to #yield or resturn value of
+  the block.
+-->
+
+
+!SLIDE smaller
+# `Fiber.yield`
+
+    @@@ ruby
+    Fiber.yield
+    # FiberError: can't yield from root fiber
+
+!SLIDE smaller
+# `Fiber.current`
+
+    @@@ ruby
+    require 'fiber'
+
+    f = Fiber.new do
+      Fiber.current == f # => true
+    end
+
+    f.resume
+
+!SLIDE smaller
+# Fibers `<3` Events
+
+    @@@ ruby
+    EM.run do
+      worker = Fiber.new do
+        f = Fiber.current
+        http = EM::HttpRequest.new('http://api.cld.me/9KXp').
+                  get(:head => { 'Accept' => 'application/json' })
+
+        http.callback { f.resume }
+        http.errback  { f.resume }
+
+        Fiber.yield
+        puts http.response
+
+        EM.stop
+      end
+
+      worker.resume
+    end
+
+!SLIDE smaller
+# Abstractions FTW
+
+    @@@ ruby
+    def get_drop(slug)
+      f = Fiber.current
+      http = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+               get(:head => { 'Accept' => 'application/json' })
+
+      http.callback { f.resume }
+      http.errback  { f.resume }
+
+      Fiber.yield
+      http.response
+    end
+
+    EM.run do
+      Fiber.new do
+        get_drop '9KXp' # => {"content_url": ...
+        get_drop '5kXC' # => {"content_url": ...
+
+        EM.stop
+      end.resume
+    end

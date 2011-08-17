@@ -31,6 +31,9 @@
 -->
 
 
+!SLIDE subsection
+# Meet the Reactor
+
 !SLIDE smaller
 # Meet the Reactor
 
@@ -40,7 +43,7 @@
       puts 'Oh, hi!'
     end
 
-    puts "You'll never see me."
+    puts "You'll never see me"
 
 
 !SLIDE smaller
@@ -60,10 +63,10 @@
 # Don't Block the Reactor!
 
     @@@ ruby
-    # The reactor can only do one thing at a time.
+    # The reactor can only do one thing at a time
     EM.run do
       while true do
-        puts 'Blocked. :('
+        puts 'Blocked :('
       end
 
       puts 'Oh noes!'
@@ -75,20 +78,20 @@
 
     @@@ ruby
     EM.run do
-      # The reactor can only do one thing at a time.
+      # The reactor can only do one thing at a time
       (0..100_000).each do |i|
-        puts "Blocked. :( #{ i }"
+        puts "Blocked :( #{ i }"
       end
 
-      puts "It's about time."
+      puts "It's about time!"
     end
 
-    # Blocked. :( 0
-    # Blocked. :( 1
-    # Blocked. :( 2
+    # Blocked :( 0
+    # Blocked :( 1
+    # Blocked :( 2
     # ...
-    # Blocked. :( 100000
-    # It's about time.
+    # Blocked :( 100000
+    # It's about time!
 
 <!--
   Anything called by the reactor blocks the reactor.
@@ -112,10 +115,10 @@
         iterator.next
       end
 
-      puts "I'm called first."
+      puts "I'm called first"
     end
 
-    # I'm called first.
+    # I'm called first
     # Not blocked! :) 0
     # Not blocked! :) 1
     # Not blocked! :) 2
@@ -162,13 +165,13 @@
                new('http://api.cld.me/9KXp').
                get(:head => { 'Accept' => 'application/json' })
 
-      http.errback do
-        puts 'Failed!'
+      http.callback do
+        puts Yajl::Parser.parse(http.response)
         EM.stop
       end
 
-      http.callback do
-        p Yajl::Parser.parse(http.response)
+      http.errback do
+        puts 'Failed!'
         EM.stop
       end
     end
