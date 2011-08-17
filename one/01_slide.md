@@ -13,18 +13,6 @@
 
 
 !SLIDE bullets
-# Asynchronous Programming
-
- - **Automatic parallelization** of a sequential program by a compiler is the
-   holy grail of parallel computing. Despite decades of work by compiler
-   researchers, automatic parallelization has had **only limited success**.
-
-   \- [Wikipedia](http://en.wikipedia.org/wiki/Concurrent_computation)
-
-<!-- Seems to be the goal of em-synchrony -->
-
-
-!SLIDE bullets
 # Asynchronous Techniques
 
  - Message queues
@@ -43,14 +31,64 @@
 -->
 
 
-!SLIDE small
+!SLIDE smaller
+# Meet the Reactor
+
+    @@@ ruby
+    # EM#run blocks until EM#stop is called
+    EventMachine.run do
+      puts 'Oh, hi!'
+    end
+
+    puts "You'll never see me."
+
+
+!SLIDE smaller
+# Meet the Reactor
+
+    @@@ ruby
+    # EM#run blocks until EM#stop is called
+    EventMachine.run do
+      puts 'Oh, hi!'
+      EventMachine.stop
+    end
+
+    puts "Now you'll see me!"
+
+
+!SLIDE smaller
 # Don't Block the Reactor!
 
     @@@ ruby
-    while reactor_running?
-        expired_timers.each { |timer| timer.process }
-        new_network_io.each { |io| io.process }
+    # The reactor can only do one thing at a time.
+    EM.run do
+      while true do
+        puts 'Blocked. :('
+      end
+
+      puts 'Oh noes!'
     end
+
+
+!SLIDE smaller
+# Don't Block the Reactor!
+
+    @@@ ruby
+    EM.run do
+      # The reactor can only do one thing at a time.
+      (0..100_000).each do |i|
+        puts "Blocked. :( #{ i }"
+      end
+
+      puts "It's about time."
+    end
+
+    # Blocked. :( 0
+    # Blocked. :( 1
+    # Blocked. :( 2
+    # ...
+    # Blocked. :( 100000
+    # It's about time.
 
 <!--
   Anything called by the reactor blocks the reactor.
@@ -63,8 +101,33 @@
   These are all possible but should be implemented using EM's methods.
 -->
 
+!SLIDE smaller
+# Don't Block the Reactor!
 
-!SLIDE small
+    @@@ ruby
+    EM.run do
+      # Iterate over a collection without blocking!
+      EM::Iterator.new(0..100_000).each do |i, iterator|
+        puts "Not blocked! :) #{ i }"
+        iterator.next
+      end
+
+      puts "I'm called first."
+    end
+
+    # I'm called first.
+    # Not blocked! :) 0
+    # Not blocked! :) 1
+    # Not blocked! :) 2
+    # ...
+
+<!--
+  EM::Iterator also provides #map and #inject
+  Optional concurrency argument
+-->
+
+
+!SLIDE smaller
 # EM.system
 
     @@@ ruby
@@ -74,7 +137,7 @@
 
 <!-- Shell out without blocking. -->
 
-!SLIDE small
+!SLIDE smaller
 # EM.popen
 
     @@@ ruby
@@ -87,14 +150,33 @@
 -->
 
 
+!SLIDE smaller
+# EM.HttpRequest
 
+    @@@ ruby
+    require 'em-http-request'
+    require 'yajl'
 
-!SLIDE bullets smaller
-# References
+    EM.run do
+      http = EM::HttpRequest.
+               new('http://api.cld.me/9KXp').
+               get(:head => { 'Accept' => 'application/json' })
 
- - [Asynchrony](http://en.wikipedia.org/wiki/Asynchrony)
- - [Actor model](http://en.wikipedia.org/wiki/Actor_model)
- - [Concurrent computation](http://en.wikipedia.org/wiki/Concurrent_computation)
- - [EventMachine: scalable non-blocking i/o in ruby](http://timetobleed.com/eventmachine-scalable-non-blocking-io-in-ruby/)
- - [MiniMagick](https://github.com/probablycorey/mini_magick)
- - [EventedMagick](https://github.com/mperham/evented/tree/master/evented_magick)
+      http.errback do
+        puts 'Failed!'
+        EM.stop
+      end
+
+      http.callback do
+        p Yajl::Parser.parse(http.response)
+        EM.stop
+      end
+    end
+
+<!--
+   1. Start the reactor
+   2. Create the request
+   3. Attach handlers
+   4. Handle response
+   4. Stop the reactor
+-->
