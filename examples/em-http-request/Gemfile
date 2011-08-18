@@ -1,3 +1,17 @@
 source :rubygems
 
 gem 'em-http-request', :git => 'https://github.com/igrigorik/em-http-request.git'
+gem 'yajl-ruby'
+
+group :test do
+  gem 'rack-test'
+  gem 'vcr', :git => 'https://github.com/myronmarston/vcr.git'
+  gem 'webmock'
+  gem 'wrong'
+
+  gem 'guard'
+  gem 'guard-minitest', :git    => 'https://github.com/lmarburger/guard-minitest.git',
+                        :branch => 'add_load_path_option'
+  gem 'growl_notify'
+  gem 'rb-fsevent'
+end
