@@ -97,7 +97,7 @@
     f.resume # => 20
 
 <!--
-  Return value of #resume is the arguments passed to #yield or resturn value of
+  Return value of #resume is the arguments passed to #yield or return value of
   the block.
 -->
 

@@ -32,13 +32,13 @@
  - Reactor pattern
 
 <!--
- - Long connections
-   - Web sockets
-   - Jabber
- - Thubmaniling images
- - Consuming APIs
- - Query a database
- - Interacting with the filesystem
+   - Long connections
+     - Web sockets
+     - Jabber
+   - Thubmaniling images
+   - Consuming APIs
+   - Query a database
+   - Interacting with the filesystem
 -->
 
 
@@ -107,10 +107,10 @@
 <!--
   Anything called by the reactor blocks the reactor.
 
-  1. No sleeping
-  2. No long loops
-  3. No blocking I/O
-  4. No polling
+   1. No sleeping
+   2. No long loops
+   3. No blocking I/O
+   4. No polling
 
   These are all possible but should be implemented using EM's methods.
 -->
