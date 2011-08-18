@@ -1,5 +1,5 @@
 !SLIDE 
-# Awesomely Audacious Adventures in Asynchrony
+# Audacious Adventures in Awesome Asynchrony
 
 !SLIDE bullets
 # Asynchronous Programming
