@@ -142,30 +142,25 @@
 
 
 !SLIDE smaller
-# EM.system
+# `EM.system`
 
     @@@ ruby
     EM.system('ls') do |output, status|
-        puts output if status.exitstatus == 0
+      puts output if status.exitstatus == 0
     end
 
-<!-- Shell out without blocking. -->
-
-!SLIDE smaller
-# EM.popen
-
-    @@@ ruby
+    # Stream stdout to handler
     EM.popen 'ls', LsHandler
 
 <!--
-   - Lower level API used by EM.system
-   - Streams stdout to the handler
-   - TODO: Write LsHandler
+   - Shell out without blocking.
+   - EM.popen is the lower level API used by EM.system
+   - EM.popen streams stdout to the handler
 -->
 
 
 !SLIDE smaller
-# EM.HttpRequest
+# `EM::HttpRequest`
 
     @@@ ruby
     require 'em-http-request'

@@ -8,6 +8,13 @@ GIT
       eventmachine (>= 1.0.0.beta.3)
       http_parser.rb (>= 0.5.1)
 
+GIT
+  remote: https://github.com/igrigorik/em-synchrony.git
+  revision: 4224adb118eb5ce53c65feb70985976ca07671ae
+  specs:
+    em-synchrony (0.3.0.beta.1)
+      eventmachine (>= 1.0.0.beta.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -22,3 +29,4 @@ PLATFORMS
 
 DEPENDENCIES
   em-http-request!
+  em-synchrony!

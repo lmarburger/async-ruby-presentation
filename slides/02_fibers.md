@@ -31,7 +31,7 @@
 
     @@@ ruby
     f = Fiber.new do
-      # This fiber has full control.
+      # Fibers have full control.
       (0..100_000).each do |i|
         puts "Blocked :( #{ i }"
       end
@@ -188,4 +188,4 @@
       EM.stop
     end
 
-    puts 'done'
+    puts 'reactor stopped'

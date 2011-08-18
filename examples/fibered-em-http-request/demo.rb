@@ -1,6 +1,12 @@
 require 'em-http-request'
 require 'fiber'
 
+puts
+puts "#######################"
+puts "### Fibered em-http ###"
+puts "#######################"
+puts
+
 EM.run do
   puts '1. reactor started'
 
@@ -39,6 +45,12 @@ puts '6. reactor stopped'
 #   6. reactor stopped
 
 
+puts
+puts "#################################"
+puts "### Add a dash of refactoring ###"
+puts "#################################"
+puts
+
 # via http://www.igvita.com/2010/03/22/untangling-evented-code-with-ruby-fibers/
 def get_drop(slug)
   f = Fiber.current
@@ -64,12 +76,46 @@ EM.run do
   end.resume
 end
 
-puts 'done'
-
+puts 'reactor stopped'
 
 # Output
 #   Retrieving 9KXp...
 #   {"content_url":"http://cl.ly/9KXp/cover.jpg","href":"http://my.cl.ly/items/8462162","name":"cover.jpg","redirect_url":null,"created_at":"2011-08-16T18:49:33Z","updated_at":"2011-08-16T18:49:49Z","private":false,"deleted_at":null,"url":"http://cl.ly/9KXp","view_counter":0,"remote_url":"http://f.cl.ly/items/2m1n1x2W132C0C0s2C2X/cover.jpg","icon":"http://my.cl.ly/images/new/item-types/image.png","id":8462162,"subscribed":true,"thumbnail_url":"http://thumbs.cl.ly/9KXp","source":"Cloud/1.5.1 CFNetwork/520.0.13 Darwin/11.0.0 (x86_64) (MacBookPro5%2C5)","item_type":"image"}
 #   Retrieving 5kXC...
 #   {"content_url":"http://cl.ly/5kXC","href":"http://my.cl.ly/items/4268562","name":"http://getcloudapp.com/download","redirect_url":"http://getcloudapp.com/download","created_at":"2011-04-04T17:10:14Z","updated_at":"2011-04-12T12:26:24Z","private":false,"deleted_at":null,"url":"http://cl.ly/5kXC","view_counter":55,"remote_url":null,"icon":"http://my.cl.ly/images/new/item-types/bookmark.png","id":4268562,"subscribed":true,"source":null,"item_type":"bookmark"}
-#   done
+#   reactor stopped
+
+
+puts
+puts "################################"
+puts "### em-synchrony abstraction ###"
+puts "################################"
+puts
+
+require 'em-synchrony'
+require 'em-synchrony/em-http'
+
+def get_drop(slug)
+  EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+    get(:head => { 'Accept' => 'application/json' }).
+    response
+end
+
+EM.synchrony do
+  puts 'Retrieving 9KXp...'
+  puts get_drop('9KXp')
+
+  puts 'Retrieving 5kXC...'
+  puts get_drop('5kXC')
+
+  EM.stop
+end
+
+puts 'reactor stopped'
+
+# Output
+#   Retrieving 9KXp...
+#   {"content_url":"http://cl.ly/9KXp/cover.jpg","href":"http://my.cl.ly/items/8462162","name":"cover.jpg","redirect_url":null,"created_at":"2011-08-16T18:49:33Z","updated_at":"2011-08-16T18:49:49Z","private":false,"deleted_at":null,"url":"http://cl.ly/9KXp","view_counter":0,"remote_url":"http://f.cl.ly/items/2m1n1x2W132C0C0s2C2X/cover.jpg","icon":"http://my.cl.ly/images/new/item-types/image.png","id":8462162,"subscribed":true,"thumbnail_url":"http://thumbs.cl.ly/9KXp","source":"Cloud/1.5.1 CFNetwork/520.0.13 Darwin/11.0.0 (x86_64) (MacBookPro5%2C5)","item_type":"image"}
+#   Retrieving 5kXC...
+#   {"content_url":"http://cl.ly/5kXC","href":"http://my.cl.ly/items/4268562","name":"http://getcloudapp.com/download","redirect_url":"http://getcloudapp.com/download","created_at":"2011-04-04T17:10:14Z","updated_at":"2011-04-12T12:26:24Z","private":false,"deleted_at":null,"url":"http://cl.ly/5kXC","view_counter":55,"remote_url":null,"icon":"http://my.cl.ly/images/new/item-types/bookmark.png","id":4268562,"subscribed":true,"source":null,"item_type":"bookmark"}
+#   reactor stopped
