@@ -3,13 +3,12 @@ source :rubygems
 gem 'em-http-request', :git => 'https://github.com/igrigorik/em-http-request.git'
 gem 'em-synchrony',    :git => 'https://github.com/igrigorik/em-synchrony.git'
 gem 'goliath'
+gem 'rake'
 gem 'tilt'
 gem 'yajl-ruby'
 
 group :test do
   gem 'rack-test'
-  gem 'vcr', :git => 'https://github.com/myronmarston/vcr.git'
-  gem 'webmock'
   gem 'wrong'
 
   gem 'guard'

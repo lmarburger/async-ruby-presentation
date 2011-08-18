@@ -23,12 +23,6 @@ GIT
     guard-minitest (0.4.0)
       guard (~> 0.4)
 
-GIT
-  remote: https://github.com/myronmarston/vcr.git
-  revision: 2054ceecc5b87c5165d7cc2d3d30e857a8509f6e
-  specs:
-    vcr (1.10.3)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -41,7 +35,6 @@ GEM
     addressable (2.2.6)
     async-rack (0.5.1)
       rack (~> 1.1)
-    crack (0.1.8)
     diff-lcs (1.1.2)
     em-socksify (0.1.0)
       eventmachine
@@ -78,6 +71,7 @@ GEM
       rack-accept-media-types (>= 0.6)
     rack-test (0.6.1)
       rack (>= 1.0)
+    rake (0.8.7)
     rb-appscript (0.6.1)
     rb-fsevent (0.4.3)
     ruby2ruby (1.2.5)
@@ -96,9 +90,6 @@ GEM
     tilt (1.3.2)
     url_mount (0.2.1)
       rack
-    webmock (1.7.4)
-      addressable (~> 2.2, > 2.2.5)
-      crack (>= 0.1.7)
     wrong (0.5.4)
       ParseTree (~> 3.0)
       diff-lcs (~> 1.1.2)
@@ -121,9 +112,8 @@ DEPENDENCIES
   guard
   guard-minitest!
   rack-test
+  rake
   rb-fsevent
   tilt
-  vcr!
-  webmock
   wrong
   yajl-ruby
