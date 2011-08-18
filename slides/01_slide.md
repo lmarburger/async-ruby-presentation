@@ -77,7 +77,7 @@
     # The reactor can only do one thing at a time
     EM.run do
       while true do
-        puts 'Blocked :('
+        puts 'Blocking :('
       end
 
       puts 'Oh noes!'
@@ -91,17 +91,17 @@
     EM.run do
       # The reactor can only do one thing at a time
       (0..100_000).each do |i|
-        puts "Blocked :( #{ i }"
+        puts "Blocking :( #{ i }"
       end
 
       puts "It's about time!"
     end
 
-    # Blocked :( 0
-    # Blocked :( 1
-    # Blocked :( 2
+    # Blocking :( 0
+    # Blocking :( 1
+    # Blocking :( 2
     # ...
-    # Blocked :( 100000
+    # Blocking :( 100000
     # It's about time!
 
 <!--
@@ -122,7 +122,7 @@
     EM.run do
       # Iterate over a collection without blocking!
       EM::Iterator.new(0..100_000).each do |i, iterator|
-        puts "Not blocked! :) #{ i }"
+        puts "Not blocking! :) #{ i }"
         iterator.next
       end
 
@@ -130,9 +130,9 @@
     end
 
     # I'm called first
-    # Not blocked! :) 0
-    # Not blocked! :) 1
-    # Not blocked! :) 2
+    # Not blocking! :) 0
+    # Not blocking! :) 1
+    # Not blocking! :) 2
     # ...
 
 <!--

@@ -33,18 +33,18 @@
     f = Fiber.new do
       # Fibers have full control.
       (0..100_000).each do |i|
-        puts "Blocked :( #{ i }"
+        puts "Blocking :( #{ i }"
       end
     end
 
     f.resume
     puts "It's about time!"
 
-    # Blocked :( 0
-    # Blocked :( 1
-    # Blocked :( 2
+    # Blocking :( 0
+    # Blocking :( 1
+    # Blocking :( 2
     # ...
-    # Blocked :( 100000
+    # Blocking :( 100000
     # It's about time!
 
 <!-- Demonstrating manual scheduling -->
@@ -59,7 +59,7 @@
       Fiber.yield
 
       (0..100_000).each do |i|
-        puts "Blocked :( #{ i }"
+        puts "Blocking :( #{ i }"
       end
     end
 
@@ -70,9 +70,9 @@
 
     f.resume
     puts "It's about time!"
-    # Blocked :( 0
+    # Blocking :( 0
     # ...
-    # Blocked :( 100000
+    # Blocking :( 100000
     # It's about time!
 
     f.resume
