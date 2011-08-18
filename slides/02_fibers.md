@@ -176,9 +176,10 @@
     require 'em-synchrony/em-http'
 
     def get_drop(slug)
-      EM::HttpRequest.new("http://api.cld.me/#{ slug }").
-        get(:head => { 'Accept' => 'application/json' }).
-        response
+      http = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+               get(:head => { 'Accept' => 'application/json' })
+
+      http.response
     end
 
     EM.synchrony do
@@ -189,3 +190,50 @@
     end
 
     puts 'reactor stopped'
+
+!SLIDE smaller
+# em-synchrony
+
+    @@@ ruby
+    # Transforms this...
+    def get_drop(slug)
+      f = Fiber.current
+      http = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+               get(:head => { 'Accept' => 'application/json' })
+
+      http.callback { f.resume }
+      http.errback  { f.resume }
+
+      Fiber.yield
+      http.response
+    end
+
+    # into this.
+    def get_drop(slug)
+      http = EM::HttpRequest.new("http://api.cld.me/#{ slug }").
+               get(:head => { 'Accept' => 'application/json' })
+
+      http.response
+    end
+
+!SLIDE smaller
+# em-synchrony
+
+    @@@ ruby
+    # Transforms this...
+    EM.run do
+      Fiber.new do
+        get_drop '9KXp' # => {"content_url": ...
+        get_drop '5kXC' # => {"content_url": ...
+
+        EM.stop
+      end.resume
+    end
+
+    # into this.
+    EM.synchrony do
+      get_drop '9KXp' # => {"content_url": ...
+      get_drop '5kXC' # => {"content_url": ...
+
+      EM.stop
+    end
